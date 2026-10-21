@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MarketMind AI — Instant Market Intelligence for Founders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── Landing-specific styles ── */
+    body { background: #fff; }
+
+    /* Nav */
+    nav {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 5%; border-bottom: 1px solid var(--border);
+      position: sticky; top: 0; background: rgba(255,255,255,.95);
+      backdrop-filter: blur(8px); z-index: 100;
+    }
+    .nav-logo { font-size: 1.25rem; font-weight: 800; color: var(--primary); letter-spacing: -.5px; }
+    .nav-logo span { color: var(--text); }
+    .nav-links { display: flex; gap: 1rem; align-items: center; }
+
+    /* Hero */
+    .hero {
+      text-align: center; padding: 5rem 5% 4rem;
+      background: linear-gradient(135deg, #f0f0ff 0%, #fafafa 60%, #fff 100%);
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: var(--primary-light); color: var(--primary);
+      padding: .3rem .9rem; border-radius: 99px; font-size: .8rem; font-weight: 600;
+      margin-bottom: 1.5rem;
+    }
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem); font-weight: 800; line-height: 1.15;
+      color: var(--text); letter-spacing: -.5px; max-width: 700px; margin: 0 auto .75rem;
+    }
+    .hero h1 em { color: var(--primary); font-style: normal; }
+    .hero p {
+      font-size: 1.15rem; color: var(--text-muted); max-width: 560px; margin: 0 auto 2rem;
+    }
+    .hero-cta { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .hero-img {
+      margin-top: 3rem; border-radius: 14px; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,.12); max-width: 860px;
+      margin-left: auto; margin-right: auto;
+    }
+    .hero-img-placeholder {
+      background: linear-gradient(135deg, var(--sidebar-bg) 0%, #1e293b 100%);
+      height: 420px; display: flex; align-items: center; justify-content: center;
+      border-radius: 14px; color: #475569; font-size: .9rem;
+    }
+    .dashboard-preview {
+      display: grid; grid-template-columns: 220px 1fr; height: 380px; text-align: left;
+    }
+    .preview-sidebar {
+      background: var(--sidebar-bg); padding: 1.5rem 1rem; display: flex; flex-direction: column; gap: .3rem;
+    }
+    .preview-sidebar .logo { color: #fff; font-weight: 700; font-size: 1rem; margin-bottom: 1rem; }
+    .preview-nav-item {
+      padding: .5rem .8rem; border-radius: 6px; color: var(--sidebar-text);
+      font-size: .8rem; cursor: pointer;
+    }
+    .preview-nav-item.active { background: rgba(255,255,255,.1); color: #fff; }
+    .preview-main { background: var(--bg); padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow: hidden; }
+    .preview-card { background: #fff; border-radius: 8px; border: 1px solid var(--border); padding: 1rem; }
+    .preview-title { font-size: .7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: .6rem; }
+    .preview-input { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; padding: .5rem .8rem; font-size: .75rem; color: var(--text-muted); width: 100%; }
+    .preview-report-item {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .5rem 0; border-bottom: 1px solid var(--border); font-size: .75rem;
+    }
+    .preview-report-item:last-child { border-bottom: none; }
+
+    /* How it works */
+    .section { padding: 4rem 5%; }
+    .section-title { text-align: center; font-size: 1.6rem; font-weight: 800; margin-bottom: .5rem; }
+    .section-sub  { text-align: center; color: var(--text-muted); margin-bottom: 3rem; }
+    .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; }
+    .step { text-align: center; padding: 2rem 1.5rem; }
+    .step-icon {
+      width: 56px; height: 56px; background: var(--primary-light); border-radius: 14px;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem;
+      font-size: 1.5rem;
+    }
+    .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: .4rem; }
+    .step p  { font-size: .875rem; color: var(--text-muted); }
+
+    /* Features */
+    .features { background: #f8fafc; }
+    .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.25rem; }
+    .feature-card {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem; transition: box-shadow .2s;
+    }
+    .feature-card:hover { box-shadow: var(--shadow-md); }
+    .feature-icon { font-size: 1.6rem; margin-bottom: .75rem; }
+    .feature-card h3 { font-size: .95rem; font-weight: 700; margin-bottom: .4rem; }
+    .feature-card p  { font-size: .85rem; color: var(--text-muted); }
+
+    /* Report sample sections */
+    .report-sections {
+      display: flex; flex-wrap: wrap; gap: .5rem; justify-content: center; margin: 1.5rem 0;
+    }
+    .section-chip {
+      background: var(--primary-light); color: var(--primary-dark);
+      padding: .3rem .8rem; border-radius: 99px; font-size: .8rem; font-weight: 600;
+    }
+
+    /* Pricing */
+    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; max-width: 860px; margin: 0 auto; }
+    .pricing-card {
+      background: #fff; border: 1.5px solid var(--border); border-radius: var(--radius);
+      padding: 2rem; position: relative;
+    }
+    .pricing-card.featured { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+    .pricing-popular {
+      position: absolute; top: -14px; left: 50%; transform: translateX(-50%);
+      background: var(--primary); color: #fff; padding: .25rem .9rem;
+      border-radius: 99px; font-size: .75rem; font-weight: 700; white-space: nowrap;
+    }
+    .pricing-name  { font-size: .85rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+    .pricing-price { font-size: 2.2rem; font-weight: 800; margin: .5rem 0; }
+    .pricing-price small { font-size: .9rem; font-weight: 400; color: var(--text-muted); }
+    .pricing-desc  { font-size: .85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .pricing-features { list-style: none; display: flex; flex-direction: column; gap: .5rem; margin-bottom: 1.5rem; }
+    .pricing-features li { font-size: .875rem; display: flex; align-items: flex-start; gap: .5rem; }
+    .pricing-features li::before { content: "✓"; color: var(--success); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+    .pricing-features li.disabled { color: var(--text-muted); }
+    .pricing-features li.disabled::before { content: "—"; color: var(--border); }
+
+    /* Testimonials */
+    .testimonials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem; }
+    .testimonial {
+      background: #fff; border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem;
+    }
+    .testimonial p  { font-size: .9rem; color: var(--text); margin-bottom: 1rem; line-height: 1.65; }
+    .testimonial .author { display: flex; align-items: center; gap: .75rem; }
+    .author-avatar {
+      width: 38px; height: 38px; border-radius: 50%; background: var(--primary);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff; font-weight: 700; font-size: .85rem; flex-shrink: 0;
+    }
+    .author-name  { font-weight: 700; font-size: .875rem; }
+    .author-title { font-size: .775rem; color: var(--text-muted); }
+
+    /* CTA banner */
+    .cta-banner {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+      color: #fff; text-align: center; padding: 4rem 5%;
+    }
+    .cta-banner h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: .75rem; }
+    .cta-banner p  { opacity: .85; margin-bottom: 2rem; font-size: 1.05rem; }
+    .btn-white { background: #fff; color: var(--primary); }
+    .btn-white:hover { background: #f0f0ff; }
+
+    /* Auth modal */
+    .auth-tabs { display: flex; gap: 0; margin-bottom: 1.5rem; border-bottom: 2px solid var(--border); }
+    .auth-tab {
+      padding: .6rem 1.2rem; font-weight: 600; font-size: .9rem; cursor: pointer;
+      border: none; background: none; color: var(--text-muted);
+      border-bottom: 2px solid transparent; margin-bottom: -2px; transition: color .15s;
+    }
+    .auth-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+
+    /* Footer */
+    footer {
+      background: var(--sidebar-bg); color: var(--sidebar-text);
+      padding: 2.5rem 5%; text-align: center; font-size: .85rem;
+    }
+    footer a { color: var(--sidebar-text); }
+    footer a:hover { color: #fff; }
+
+    /* Responsive */
+    @media (max-width: 640px) {
+      .dashboard-preview { grid-template-columns: 1fr; }
+      .preview-sidebar { display: none; }
+      nav .nav-links .btn-ghost { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Navigation ── -->
+<nav>
+  <div class="nav-logo">Market<span>Mind</span> AI</div>
+  <div class="nav-links">
+    <a href="#pricing" style="color:var(--text-muted);font-size:.9rem;font-weight:500">Pricing</a>
+    <button class="btn btn-ghost btn-sm" onclick="openAuth('login')">Sign In</button>
+    <button class="btn btn-primary btn-sm" onclick="openAuth('signup')">Get Started Free</button>
+  </div>
+</nav>
+
+<!-- ── Hero ── -->
+<section class="hero">
+  <div class="hero-badge">✦ Powered by CrewAI + Groq Llama</div>
+  <h1>Turn any market into a<br><em>7-section strategic report</em><br>in under 5 minutes</h1>
+  <p>Live web research + AI strategy synthesis. Get the market intelligence that usually costs $5,000 from a consultant — instantly.</p>
+  <div class="hero-cta">
+    <button class="btn btn-primary" onclick="openAuth('signup')" style="font-size:1rem;padding:.75rem 2rem">
+      Start for Free — 5 reports/month
+    </button>
+    <button class="btn btn-outline" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+      See how it works
+    </button>
+  </div>
+
+  <!-- Dashboard preview mockup -->
+  <div class="hero-img">
+    <div class="dashboard-preview">
+      <div class="preview-sidebar">
+        <div class="logo">⚡ MarketMind</div>
+        <div class="preview-nav-item active">📊 Dashboard</div>
+        <div class="preview-nav-item">📄 Reports</div>
+        <div class="preview-nav-item">💳 Billing</div>
+      </div>
+      <div class="preview-main">
+        <div class="preview-card">
+          <div class="preview-title">New Analysis</div>
+          <div class="preview-input">Electric vehicles in India…</div>
+          <div style="margin-top:.6rem">
+            <span style="background:var(--primary);color:#fff;padding:.3rem .8rem;border-radius:6px;font-size:.75rem;font-weight:600">▶ Run Analysis</span>
+          </div>
+        </div>
+        <div class="preview-card" style="flex:1">
+          <div class="preview-title">Recent Reports</div>
+          <div class="preview-report-item">
+            <span style="color:var(--text);font-weight:500;font-size:.8rem">⚡ EV Market — India 2024</span>
+            <span class="badge badge-done" style="font-size:.7rem">done</span>
+          </div>
+          <div class="preview-report-item">
+            <span style="color:var(--text);font-weight:500;font-size:.8rem">🛒 D2C Skincare — SEA</span>
+            <span class="badge badge-running" style="font-size:.7rem">running</span>
+          </div>
+          <div class="preview-report-item">
+            <span style="color:var(--text);font-weight:500;font-size:.8rem">💸 BNPL for Tier-2 India</span>
+            <span class="badge badge-done" style="font-size:.7rem">done</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── How it works ── -->
+<section class="section" id="how-it-works">
+  <h2 class="section-title">How it works</h2>
+  <p class="section-sub">Two AI agents. Live web research. One consultant-grade report.</p>
+  <div class="steps">
+    <div class="step">
+      <div class="step-icon">✏️</div>
+      <h3>Enter your market</h3>
+      <p>Type any market topic — as broad as "SaaS" or as specific as "BNPL for college students in India".</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">🔍</div>
+      <h3>AI Researcher goes live</h3>
+      <p>The Market Researcher agent searches the web in real time, pulling competitor data, funding rounds, customer reviews, and market sizing.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">📊</div>
+      <h3>Strategist synthesizes</h3>
+      <p>The Business Strategist transforms raw research into a structured report with GTM scoring, risk register, and a 90-day action plan.</p>
+    </div>
+    <div class="step">
+      <div class="step-icon">📥</div>
+      <h3>Download or share</h3>
+      <p>Export as a styled PDF or get a public share link to send to your team or investors — no login needed to view.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── What's in every report ── -->
+<section class="section features" style="background:#f0f0ff">
+  <h2 class="section-title">Every report includes</h2>
+  <p class="section-sub">9 sections. Structured. Actionable. Cite-able.</p>
+  <div class="report-sections">
+    <span class="section-chip">Executive Summary</span>
+    <span class="section-chip">Opportunity Score (1–10)</span>
+    <span class="section-chip">Competitive Landscape</span>
+    <span class="section-chip">Customer Pain Points</span>
+    <span class="section-chip">Recommended Positioning</span>
+    <span class="section-chip">Go-To-Market Strategy</span>
+    <span class="section-chip">Risk Register</span>
+    <span class="section-chip">Quick Wins (30 days)</span>
+    <span class="section-chip">90-Day Action Plan</span>
+  </div>
+</section>
+
+<!-- ── Features ── -->
+<section class="section features">
+  <h2 class="section-title">Built for builders</h2>
+  <p class="section-sub">Everything a founder needs to validate a market in one tool.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🌐</div>
+      <h3>Live web research</h3>
+      <p>Agents search the web in real time — not trained on stale data. Every report reflects the current market.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>Multi-agent AI</h3>
+      <p>Two specialized agents collaborate — one researches, one strategizes. Better output than a single prompt.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>Async job queue</h3>
+      <p>Submit your topic and come back. No waiting on a frozen browser tab. Get notified when done.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>PDF export</h3>
+      <p>Download a professionally formatted PDF you can hand to your team, board, or investors.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔗</div>
+      <h3>Shareable links</h3>
+      <p>Generate a public link for any report. Anyone can read it — no login required.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📈</div>
+      <h3>Usage dashboard</h3>
+      <p>Track how many reports you've run this month. Upgrade when you need more.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── Pricing ── -->
+<section class="section" id="pricing">
+  <h2 class="section-title">Simple pricing</h2>
+  <p class="section-sub">Start free. Upgrade when you need more.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card">
+      <div class="pricing-name">Free</div>
+      <div class="pricing-price">₹0 <small>/ month</small></div>
+      <div class="pricing-desc">Perfect for exploring a new market idea.</div>
+      <ul class="pricing-features">
+        <li>5 reports per month</li>
+        <li>PDF export</li>
+        <li>Shareable links</li>
+        <li class="disabled">Priority processing</li>
+        <li class="disabled">API access</li>
+        <li class="disabled">Team seats</li>
+      </ul>
+      <button class="btn btn-outline w-full" onclick="openAuth('signup')">Get Started</button>
+    </div>
+    <div class="pricing-card featured">
+      <div class="pricing-popular">Most Popular</div>
+      <div class="pricing-name">Pro</div>
+      <div class="pricing-price">₹999 <small>/ month</small></div>
+      <div class="pricing-desc">For founders doing serious market research.</div>
+      <ul class="pricing-features">
+        <li>Unlimited reports</li>
+        <li>PDF export</li>
+        <li>Shareable links</li>
+        <li>Priority processing</li>
+        <li>API access</li>
+        <li class="disabled">Team seats</li>
+      </ul>
+      <button class="btn btn-primary w-full" onclick="showUpgradeModal()">Coming Soon</button>
+    </div>
+    <div class="pricing-card">
+      <div class="pricing-name">Team</div>
+      <div class="pricing-price">₹3,999 <small>/ month</small></div>
+      <div class="pricing-desc">For VC firms, accelerators, and agency teams.</div>
+      <ul class="pricing-features">
+        <li>Unlimited reports</li>
+        <li>PDF export</li>
+        <li>Shareable links</li>
+        <li>Priority processing</li>
+        <li>API access</li>
+        <li>Up to 10 seats</li>
+      </ul>
+      <button class="btn btn-ghost w-full" onclick="window.location.href='mailto:hello@marketmind.ai'">Contact Us</button>
+    </div>
+  </div>
+</section>
+
+<!-- ── Testimonials ── -->
+<section class="section" style="background:#f8fafc">
+  <h2 class="section-title">What founders say</h2>
+  <p class="section-sub"></p>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <p>"I used to spend 3 days pulling together market research before a pitch. This gave me a better output in 5 minutes."</p>
+      <div class="author">
+        <div class="author-avatar">R</div>
+        <div><div class="author-name">Rahul M.</div><div class="author-title">Founder, D2C Brand</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <p>"The GTM channel scoring table alone is worth it. I shared the PDF with my co-founder and we had our strategy call in 20 minutes."</p>
+      <div class="author">
+        <div class="author-avatar">P</div>
+        <div><div class="author-name">Priya S.</div><div class="author-title">SaaS Co-founder</div></div>
+      </div>
+    </div>
+    <div class="testimonial">
+      <p>"The Quick Wins section is underrated. We executed two of the three actions in the first week and got our first 3 customer calls."</p>
+      <div class="author">
+        <div class="author-avatar">A</div>
+        <div><div class="author-name">Arjun K.</div><div class="author-title">Pre-seed Founder</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CTA banner ── -->
+<section class="cta-banner">
+  <h2>Ready to research your market?</h2>
+  <p>5 free reports every month. No credit card required.</p>
+  <button class="btn btn-white" onclick="openAuth('signup')" style="font-size:1rem;padding:.75rem 2rem">
+    Create Free Account →
+  </button>
+</section>
+
+<!-- ── Footer ── -->
+<footer>
+  <p>© 2026 MarketMind AI &nbsp;·&nbsp; <a href="mailto:hello@marketmind.ai">Contact</a></p>
+</footer>
+
+<!-- ── Auth Modal ── -->
+<div id="auth-modal" class="modal-overlay hidden">
+  <div class="modal-box">
+    <button class="modal-close" onclick="closeAuth()">✕</button>
+    <div style="text-align:center;margin-bottom:1rem">
+      <div class="nav-logo" style="font-size:1.3rem">Market<span>Mind</span> AI</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab" id="tab-login" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" id="tab-signup" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- Login form -->
+    <form id="auth-login-form" onsubmit="handleLogin(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="login-email" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="login-password" placeholder="••••••••" required />
+      </div>
+      <div id="login-error" class="error-msg"></div>
+      <button class="btn btn-primary w-full mt-2" type="submit" id="login-btn">Sign In</button>
+    </form>
+
+    <!-- Signup form -->
+    <form id="auth-signup-form" class="hidden" onsubmit="handleSignup(event)">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" id="signup-email" placeholder="you@example.com" required />
+      </div>
+      <div class="form-group">
+        <label>Password <span class="text-muted text-xs">(min 8 chars)</span></label>
+        <input type="password" id="signup-password" placeholder="••••••••" minlength="8" required />
+      </div>
+      <div id="signup-error" class="error-msg"></div>
+      <div id="signup-success" class="hidden" style="background:#ecfdf5;color:#065f46;padding:.75rem;border-radius:8px;font-size:.875rem;margin:.5rem 0"></div>
+      <button class="btn btn-primary w-full mt-2" type="submit" id="signup-btn">Create Free Account</button>
+      <p class="text-xs text-muted mt-2" style="text-align:center">By signing up you agree to our terms of service.</p>
+    </form>
+  </div>
+</div>
+
+<!-- ── Upgrade modal ── -->
+<div id="upgrade-modal" class="modal-overlay hidden">
+  <div class="modal-box" style="text-align:center">
+    <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.add('hidden')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:.75rem">🚀</div>
+    <h2 style="font-size:1.3rem;margin-bottom:.5rem">Pro Plan — Coming Soon</h2>
+    <p class="text-muted" style="margin-bottom:1.5rem">We're setting up payments. Drop your email to get notified when Pro launches.</p>
+    <input type="email" id="waitlist-email" placeholder="your@email.com" style="margin-bottom:.75rem" />
+    <button class="btn btn-primary w-full" onclick="joinWaitlist()">Notify Me</button>
+  </div>
+</div>
+
+<!-- ── Toast container ── -->
+<div id="toast-container"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = "https://zyvpaoggezsxkincafud.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp5dnBhb2dnZXpzeGtpbmNhZnVkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTIyNTcyMDAsImV4cCI6MjEwNzgzMzIwMH0.3UhD-9dZCO2mzJiJKkZwxFIvEB2fBmZJznkwrnPkuMc";
+  const { createClient } = window.supabase;
+  const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  function openAuth(tab) {
+    document.getElementById('auth-modal').classList.remove('hidden');
+    switchTab(tab);
+  }
+  function closeAuth() {
+    document.getElementById('auth-modal').classList.add('hidden');
+  }
+  function switchTab(tab) {
+    document.getElementById('auth-login-form').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('auth-signup-form').classList.toggle('hidden', tab !== 'signup');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-signup').classList.toggle('active', tab === 'signup');
+  }
+  function showUpgradeModal() {
+    document.getElementById('upgrade-modal').classList.remove('hidden');
+  }
+
+  function showToast(msg, type = 'info') {
+    const el = document.createElement('div');
+    el.className = `toast toast-${type}`;
+    el.textContent = msg;
+    document.getElementById('toast-container').appendChild(el);
+    setTimeout(() => el.remove(), 4000);
+  }
+
+  async function handleLogin(e) {
+    e.preventDefault();
+    const btn = document.getElementById('login-btn');
+    btn.disabled = true; btn.textContent = 'Signing in…';
+    document.getElementById('login-error').textContent = '';
+
+    const { data, error } = await sb.auth.signInWithPassword({
+      email: document.getElementById('login-email').value.trim(),
+      password: document.getElementById('login-password').value,
+    });
+    btn.disabled = false; btn.textContent = 'Sign In';
+
+    if (error) {
+      document.getElementById('login-error').textContent = error.message;
+      return;
+    }
+    closeAuth();
+    window.location.href = 'app.html';
+  }
+
+  async function handleSignup(e) {
+    e.preventDefault();
+    const btn = document.getElementById('signup-btn');
+    btn.disabled = true; btn.textContent = 'Creating account…';
+    document.getElementById('signup-error').textContent = '';
+    document.getElementById('signup-success').classList.add('hidden');
+
+    const email = document.getElementById('signup-email').value.trim();
+    const password = document.getElementById('signup-password').value;
+
+    const { data, error } = await sb.auth.signUp({ email, password });
+    btn.disabled = false; btn.textContent = 'Create Free Account';
+
+    if (error) {
+      document.getElementById('signup-error').textContent = error.message;
+      return;
+    }
+
+    document.getElementById('signup-success').textContent =
+      '✓ Account created! Check your email to confirm, then sign in.';
+    document.getElementById('signup-success').classList.remove('hidden');
+  }
+
+  function joinWaitlist() {
+    const email = document.getElementById('waitlist-email').value.trim();
+    if (!email) return;
+    showToast("You're on the list! We'll notify you when Pro launches.", 'success');
+    document.getElementById('upgrade-modal').classList.add('hidden');
+  }
+
+  // Check if already logged in → redirect to app
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'app.html';
+  });
+
+  // Close modal on overlay click
+  document.getElementById('auth-modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeAuth();
+  });
+</script>
+</body>
+</html>

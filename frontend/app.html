@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard — MarketMind AI</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    /* ── App shell layout ── */
+    html, body { height: 100%; overflow: hidden; }
+    body { display: flex; flex-direction: column; }
+
+    /* Top bar */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .75rem 1.5rem; background: var(--card-bg);
+      border-bottom: 1px solid var(--border); flex-shrink: 0; z-index: 50;
+    }
+    .topbar-logo { font-size: 1.1rem; font-weight: 800; color: var(--primary); }
+    .topbar-logo span { color: var(--text); }
+    .topbar-right { display: flex; align-items: center; gap: .75rem; }
+    .usage-pill {
+      background: var(--primary-light); color: var(--primary-dark);
+      padding: .25rem .75rem; border-radius: 99px; font-size: .75rem; font-weight: 600;
+    }
+    .user-menu { display: flex; align-items: center; gap: .5rem; font-size: .85rem; color: var(--text-muted); }
+
+    /* Main content area with sidebar */
+    .app-body { display: flex; flex: 1; overflow: hidden; }
+
+    /* Sidebar */
+    .sidebar {
+      width: 220px; background: var(--sidebar-bg); flex-shrink: 0;
+      display: flex; flex-direction: column; padding: 1rem .75rem;
+      overflow-y: auto;
+    }
+    .nav-section-label {
+      font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px;
+      color: #475569; padding: .5rem .75rem; margin-top: .5rem;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .55rem .75rem; border-radius: 7px;
+      color: var(--sidebar-text); font-size: .875rem; font-weight: 500;
+      cursor: pointer; transition: background .15s, color .15s;
+      user-select: none;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.07); color: #e2e8f0; }
+    .nav-item.active { background: rgba(79,70,229,.25); color: #c7d2fe; }
+    .nav-item .icon { font-size: 1rem; flex-shrink: 0; }
+    .sidebar-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid #1e293b; }
+
+    /* Main content */
+    .main-content { flex: 1; overflow-y: auto; padding: 1.75rem 2rem; background: var(--bg); }
+    .page-header { margin-bottom: 1.5rem; }
+    .page-title { font-size: 1.3rem; font-weight: 800; color: var(--text); }
+    .page-sub   { font-size: .875rem; color: var(--text-muted); margin-top: .2rem; }
+
+    /* New analysis card */
+    .analysis-card .input-row {
+      display: flex; gap: .75rem;
+    }
+    .analysis-card #topic-input { flex: 1; }
+
+    /* Report rows */
+    .report-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .75rem 0; border-bottom: 1px solid var(--border);
+      cursor: pointer; transition: background .1s;
+    }
+    .report-row:last-child { border-bottom: none; }
+    .report-row:hover { background: var(--bg); margin: 0 -1rem; padding: .75rem 1rem; border-radius: 6px; }
+
+    /* Job cards */
+    @keyframes progress-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: .6; }
+    }
+
+    /* Billing */
+    .plan-card {
+      background: linear-gradient(135deg, var(--primary) 0%, #7c3aed 100%);
+      color: #fff; border-radius: var(--radius); padding: 1.5rem;
+      margin-bottom: 1.25rem;
+    }
+    .plan-card h3 { font-size: 1.1rem; font-weight: 700; }
+    .plan-card p  { opacity: .85; font-size: .875rem; margin-top: .25rem; }
+
+    /* Report modal */
+    .report-modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.5);
+      z-index: 200; display: flex; align-items: flex-start; justify-content: center;
+      padding: 2rem 1rem; overflow-y: auto;
+    }
+    .report-modal-box {
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+      width: 100%; max-width: 780px; padding: 2rem;
+      position: relative;
+    }
+    .report-modal-actions {
+      display: flex; gap: .5rem; margin-bottom: 1.5rem;
+      padding-bottom: 1rem; border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+    }
+
+    /* Share modal */
+    .share-input-row { display: flex; gap: .5rem; }
+    .share-input-row input { flex: 1; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main-content { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Top bar ── -->
+<header class="topbar">
+  <div class="topbar-logo">Market<span>Mind</span> AI</div>
+  <div class="topbar-right">
+    <div class="usage-pill" id="usage-badge">0/5 reports</div>
+    <div class="user-menu">
+      <span id="user-email" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">Sign Out</button>
+    </div>
+  </div>
+</header>
+
+<!-- ── Body ── -->
+<div class="app-body">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <div class="nav-section-label">Menu</div>
+    <div class="nav-item active" data-page="dashboard" onclick="navigate('dashboard')">
+      <span class="icon">📊</span> Dashboard
+    </div>
+    <div class="nav-item" data-page="reports" onclick="navigate('reports')">
+      <span class="icon">📄</span> All Reports
+    </div>
+    <div class="nav-item" data-page="billing" onclick="navigate('billing')">
+      <span class="icon">💳</span> Billing
+    </div>
+    <div class="sidebar-bottom">
+      <div class="nav-item" onclick="window.open('http://localhost:8000/docs','_blank')">
+        <span class="icon">⚙️</span> API Docs
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content">
+
+    <!-- ── Dashboard page ── -->
+    <div id="page-dashboard" class="page">
+      <div class="page-header">
+        <div class="page-title">Dashboard</div>
+        <div class="page-sub">Run a new analysis or review your recent reports.</div>
+      </div>
+
+      <!-- New analysis -->
+      <div class="card analysis-card" style="margin-bottom:1.5rem">
+        <div class="card-header">
+          <div class="card-title">🔍 New Market Analysis</div>
+        </div>
+        <p class="text-sm text-muted" style="margin-bottom:1rem">
+          Enter any market topic — the more specific, the sharper the report.
+          <br><span style="color:var(--text-muted);font-style:italic">e.g. "BNPL for college students in India" or "EV charging infra in tier-2 cities"</span>
+        </p>
+        <div class="input-row">
+          <input type="text" id="topic-input" placeholder="e.g. D2C skincare for men in Southeast Asia" autocomplete="off" />
+          <button class="btn btn-primary" id="run-btn" onclick="submitJob()">▶ Run Analysis</button>
+        </div>
+        <p class="text-xs text-muted mt-2">⏱ Takes 2–5 minutes. You'll be notified when the report is ready.</p>
+      </div>
+
+      <!-- Active jobs -->
+      <div id="active-jobs"></div>
+
+      <!-- Recent reports -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 Recent Reports</div>
+          <button class="btn btn-ghost btn-sm" onclick="navigate('reports')">View All →</button>
+        </div>
+        <div id="recent-reports"></div>
+      </div>
+    </div>
+
+    <!-- ── Reports page ── -->
+    <div id="page-reports" class="page hidden">
+      <div class="page-header" style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div class="page-title">All Reports</div>
+          <div class="page-sub">All your market analysis reports.</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="navigate('dashboard')">+ New Analysis</button>
+      </div>
+      <div id="reports-list"></div>
+    </div>
+
+    <!-- ── Billing page ── -->
+    <div id="page-billing" class="page hidden">
+      <div class="page-header">
+        <div class="page-title">Billing & Usage</div>
+        <div class="page-sub">Track your usage and manage your plan.</div>
+      </div>
+
+      <div class="plan-card">
+        <h3>Current Plan: <span id="billing-plan">Free</span></h3>
+        <p>Upgrade to Pro for unlimited reports, priority processing, and API access.</p>
+      </div>
+
+      <div class="card" style="margin-bottom:1.25rem">
+        <div class="card-header">
+          <div class="card-title">Usage This Month</div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:.875rem;margin-bottom:.5rem">
+          <span><strong id="billing-used">0</strong> reports used</span>
+          <span class="text-muted"><strong id="billing-limit">5</strong> included in free plan</span>
+        </div>
+        <div class="progress-bar-wrap" style="height:12px">
+          <div class="progress-bar-fill" id="billing-progress" style="width:0%"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Upgrade to Pro</div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1.25rem">
+          <div style="display:flex;gap:.5rem;align-items:flex-start">
+            <span style="color:var(--success);font-weight:700;margin-top:1px">✓</span>
+            <span class="text-sm">Unlimited reports</span>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:flex-start">
+            <span style="color:var(--success);font-weight:700;margin-top:1px">✓</span>
+            <span class="text-sm">Priority processing</span>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:flex-start">
+            <span style="color:var(--success);font-weight:700;margin-top:1px">✓</span>
+            <span class="text-sm">API access</span>
+          </div>
+          <div style="display:flex;gap:.5rem;align-items:flex-start">
+            <span style="color:var(--success);font-weight:700;margin-top:1px">✓</span>
+            <span class="text-sm">PDF exports</span>
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="document.getElementById('upgrade-modal').classList.remove('hidden')">
+          Upgrade to Pro — ₹999/month
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── Report viewer modal ── -->
+<div id="report-modal" class="report-modal-overlay hidden" onclick="if(event.target===this)closeReportModal()">
+  <div class="report-modal-box">
+    <button style="position:absolute;top:1rem;right:1rem;background:none;border:none;font-size:1.3rem;cursor:pointer;color:var(--text-muted)" onclick="closeReportModal()">✕</button>
+    <h2 id="report-modal-title" style="font-size:1.2rem;font-weight:800;margin-bottom:1rem;padding-right:2rem"></h2>
+    <div class="report-modal-actions">
+      <button class="btn btn-outline btn-sm" id="report-modal-pdf">📄 Download PDF</button>
+      <button class="btn btn-ghost btn-sm" id="report-modal-share">🔗 Share Link</button>
+      <button class="btn btn-ghost btn-sm" onclick="closeReportModal()">✕ Close</button>
+    </div>
+    <div id="report-modal-body" class="report-body"></div>
+  </div>
+</div>
+
+<!-- ── Share modal ── -->
+<div id="share-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-box">
+    <button class="modal-close" onclick="document.getElementById('share-modal').classList.add('hidden')">✕</button>
+    <h3 style="margin-bottom:.5rem">🔗 Share Report</h3>
+    <p class="text-sm text-muted" style="margin-bottom:1rem">Anyone with this link can view the report — no login required.</p>
+    <div class="share-input-row">
+      <input type="text" id="share-url-input" readonly />
+      <button class="btn btn-primary btn-sm" onclick="copyShareUrl()">Copy</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── Upgrade modal ── -->
+<div id="upgrade-modal" class="modal-overlay hidden" onclick="if(event.target===this)this.classList.add('hidden')">
+  <div class="modal-box" style="text-align:center">
+    <button class="modal-close" onclick="document.getElementById('upgrade-modal').classList.add('hidden')">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:.75rem">🚀</div>
+    <h2 style="font-size:1.3rem;margin-bottom:.5rem">You've hit the free limit</h2>
+    <p class="text-muted" style="margin-bottom:.5rem">You've used all 5 free reports this month.</p>
+    <p class="text-muted" style="margin-bottom:1.5rem">Upgrade to Pro for unlimited reports at ₹999/month.</p>
+    <button class="btn btn-primary w-full" style="margin-bottom:.75rem" onclick="toast('Pro plan coming soon! We\'ll notify you when it launches.','info');document.getElementById('upgrade-modal').classList.add('hidden')">
+      Upgrade to Pro — ₹999/month
+    </button>
+    <p class="text-xs text-muted">Resets on the 1st of each month. You'll get 5 more free reports then.</p>
+  </div>
+</div>
+
+<!-- ── Toast ── -->
+<div id="toast-container"></div>
+
+<!-- ── Scripts ── -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.3/dist/purify.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

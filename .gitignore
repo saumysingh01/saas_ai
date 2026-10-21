@@ -1,0 +1,56 @@
+# ── Python ────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.Python
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Type checking
+.mypy_cache/
+.dmypy.json
+.pytype/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ── Secrets — NEVER commit these ──────────────────────────────
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+
+# ── Logs ──────────────────────────────────────────────────────
+*.log
+logs/
+
+# ── OS / Editor ───────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Node (if you ever add a build step) ───────────────────────
+node_modules/
+npm-debug.log*
+
+# ── PyMuPDF scratch files ─────────────────────────────────────
+*.pdf
