@@ -1,0 +1,24 @@
+# Force LF line endings for all text files in the repository.
+# This ensures consistent behaviour across Windows, macOS, and Linux.
+
+* text=auto eol=lf
+
+# Explicitly set LF for source files
+*.py    text eol=lf
+*.js    text eol=lf
+*.html  text eol=lf
+*.css   text eol=lf
+*.json  text eol=lf
+*.md    text eol=lf
+*.txt   text eol=lf
+*.sql   text eol=lf
+*.env   text eol=lf
+*.toml  text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Binary files — never convert
+*.pdf   binary
+*.png   binary
+*.jpg   binary
+*.ico   binary
